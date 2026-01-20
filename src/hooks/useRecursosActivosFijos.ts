@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { executeQuery, executeMutation } from '@/services/graphql-client';
 import { LIST_RECURSOS_ACTIVOS_FIJOS_QUERY } from '@/graphql/queries/recursos.queries';
+import { getSimpleAutoSyncService } from '@/services/simple-auto-sync.service';
+import { getRecursosFromIndexedDB } from '@/lib/db';
 import toast from 'react-hot-toast';
 
 export interface RecursosActivosFijosFilters {
@@ -46,6 +48,10 @@ export function useRecursosActivosFijos(input?: RecursosActivosFijosFilters) {
   return useQuery<RecursosPaginationResult>({
     queryKey: ['recursos-activos-fijos', input],
     queryFn: async () => {
+      // Verificar sincronización automática
+      const syncService = getSimpleAutoSyncService();
+      await syncService.checkAndSyncIfNeeded();
+
       const variables = {
         input: {
           page: input?.page || 1,

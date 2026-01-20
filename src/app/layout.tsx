@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { Providers } from '@/providers/providers';
 import { PWAProvider } from '@/components/pwa-provider';
+import { AutoSyncInitializer } from '@/components/auto-sync-initializer';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body className={inter.className} suppressHydrationWarning>
         <Providers>
           <PWAProvider>
+            <AutoSyncInitializer />
             {children}
           </PWAProvider>
         </Providers>
