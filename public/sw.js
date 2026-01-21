@@ -28,7 +28,8 @@ const STATIC_ASSETS = [
   '/manifest.json',
   '/favicon.ico',
   '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/icons/icon-512x512.png',
+  '/logo-negativo.webp', // Logo del sidebar offline
 ];
 
 // Evento de instalación

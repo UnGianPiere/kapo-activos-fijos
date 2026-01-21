@@ -48,6 +48,7 @@ const nextConfig: NextConfig = {
             // Assets estáticos necesarios para offline
             { url: '/manifest.json', revision: null },
             { url: '/favicon.ico', revision: null },
+            { url: '/logo-negativo.webp', revision: null }, // Logo del sidebar offline
           ],
 
           // Runtime caching

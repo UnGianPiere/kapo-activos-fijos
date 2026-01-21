@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, FileText, Eye, Package, User, Calendar } from 'lucide-react';
+import { RefreshCw, FileText, Eye, Package, User, Calendar, WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getDB, getReporteOfflineById, updateReporteOfflineSyncStatus } from '@/lib/db';
 import { executeMutationWithFiles } from '@/services/graphql-client';
 import { CREATE_REPORTE_ACTIVO_FIJO_MUTATION } from '@/graphql/mutations';
 import { toast } from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { useOnline } from '@/hooks';
 import ReporteOfflineView from './components/reporte-view';
 
 // Función para formatear fecha
@@ -55,6 +56,8 @@ const loadOfflineReports = async (): Promise<any[]> => {
 
 export default function GestionReportesOfflinePage() {
   const queryClient = useQueryClient();
+  const { status: onlineStatus } = useOnline();
+  const isOnline = onlineStatus === 'online';
   const [reportesOffline, setReportesOffline] = useState<any[]>([]);
   const [loadingReportes, setLoadingReportes] = useState(false);
   const [selectedReporte, setSelectedReporte] = useState<any>(null);
@@ -92,6 +95,15 @@ export default function GestionReportesOfflinePage() {
 
   // Función para sincronizar un reporte individual
   const sincronizarReporte = async (reporteId: string) => {
+    // Validar conexión antes de sincronizar
+    if (!isOnline) {
+      toast.error('Se requiere conexión a internet para sincronizar', {
+        icon: <WifiOff className="w-5 h-5" />,
+        duration: 3000,
+      });
+      return;
+    }
+
     if (syncingReportes.has(reporteId)) return;
 
     setSyncingReportes(prev => new Set(prev).add(reporteId));
@@ -328,7 +340,11 @@ export default function GestionReportesOfflinePage() {
                           onClick={() => sincronizarReporte(reporte.id)}
                           disabled={syncingReportes.has(reporte.id) || reporte.sync_status === 'synced'}
                           className="p-1 rounded hover:bg-[var(--hover)] text-green-600 dark:text-green-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          title={reporte.sync_status === 'synced' ? 'Ya sincronizado' : 'Sincronizar'}
+                          title={
+                            reporte.sync_status === 'synced' 
+                              ? 'Ya sincronizado' 
+                              : 'Sincronizar'
+                          }
                         >
                           <RefreshCw className={cn(
                             "h-4 w-4",
